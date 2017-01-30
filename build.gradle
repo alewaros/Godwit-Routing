@@ -1,0 +1,27 @@
+group 'io.winebox'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    ext.kotlin_version = '1.0.6'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'kotlin'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile group: 'com.graphhopper', name: 'jsprit-core', version: '1.7'
+    compile group: 'com.graphhopper', name: 'graphhopper-core', version: '0.8.2'
+    compile group: 'com.graphhopper', name: 'graphhopper-reader-osm', version: '0.8.2'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.22'
+}
