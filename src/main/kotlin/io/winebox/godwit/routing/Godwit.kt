@@ -63,7 +63,7 @@ object Godwit {
 
     val delayFactor: Double get() {
       return when (this) {
-        NONE -> pow(1.44, 2.0)
+        NONE -> pow(1.44, 0.0)
         LIGHT -> pow(1.44, 1.0)
         MODERATE -> pow(1.44, 2.0)
         HEAVY -> pow(1.44, 3.0)
@@ -106,7 +106,7 @@ object Godwit {
         return Path(Double.MAX_VALUE, Double.MAX_VALUE)
       }
       val path = response.best
-      return Path(path.distance, (path.time / 1000 / 60).toDouble())
+      return Path(path.distance, path.time / 1000.0 / 60.0)
     }
   }
 

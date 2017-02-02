@@ -47,19 +47,11 @@ class GodwitRoutingCosts(
   // TODO: Handle error on locations without coordinates
   override fun getTransportCost(from: Location, to: Location, departureTime: Double, driver: Driver?, vehicle: Vehicle?): Double {
     val key = Pair(from.coordinate, to.coordinate)
-    return when (weighting) {
-      Godwit.Weighting.SHORTEST -> {
-        val distance = routingCosts[key]!!.distance
-        val perDistanceUnit = vehicle?.type?.vehicleCostParams?.perDistanceUnit ?: 1.0
-        distance * perDistanceUnit
-      }
-      Godwit.Weighting.FASTEST -> {
-        val time = routingCosts[key]!!.time
-        val perTransportTimeUnit = vehicle?.type?.vehicleCostParams?.perTransportTimeUnit ?: 1.0
-        time * perTransportTimeUnit * traffic.delayFactor
-      }
-    }
+    val path = routingCosts[key]!!
 
+    val perDistanceUnit = vehicle?.type?.vehicleCostParams?.perDistanceUnit ?: 1.0
+    val perTransportTimeUnit = /*vehicle?.type?.vehicleCostParams?.perTransportTimeUnit ?:*/ 1.0
+    return path.distance * perDistanceUnit + 60.0 * path.time * perTransportTimeUnit * traffic.delayFactor
   }
 
   override fun getTransportTime(from: Location, to: Location, departureTime: Double, driver: Driver?, vehicle: Vehicle?): Double {
