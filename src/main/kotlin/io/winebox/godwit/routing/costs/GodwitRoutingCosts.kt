@@ -14,7 +14,8 @@ import io.winebox.godwit.routing.Godwit
 
 class GodwitRoutingCosts(
   coordinates: Collection<Coordinate>,
-  weighting: Godwit.Weighting
+  private val weighting: Godwit.Weighting = Godwit.Weighting.FASTEST,
+  private val traffic: Godwit.Traffic = Godwit.Traffic.NONE
 ): AbstractForwardVehicleRoutingTransportCosts(), TransportDistance {
   private class CoordinateLocationWrapper(
     val coordinate: Coordinate
@@ -46,14 +47,24 @@ class GodwitRoutingCosts(
   // TODO: Handle error on locations without coordinates
   override fun getTransportCost(from: Location, to: Location, departureTime: Double, driver: Driver?, vehicle: Vehicle?): Double {
     val key = Pair(from.coordinate, to.coordinate)
-    val distance = routingCosts[key]!!.distance
-    val perDistanceUnit = vehicle?.type?.vehicleCostParams?.perDistanceUnit ?: 1.0
-    return distance * perDistanceUnit
+    return when (weighting) {
+      Godwit.Weighting.SHORTEST -> {
+        val distance = routingCosts[key]!!.distance
+        val perDistanceUnit = vehicle?.type?.vehicleCostParams?.perDistanceUnit ?: 1.0
+        distance * perDistanceUnit
+      }
+      Godwit.Weighting.FASTEST -> {
+        val time = routingCosts[key]!!.time
+        val perTransportTimeUnit = vehicle?.type?.vehicleCostParams?.perTransportTimeUnit ?: 1.0
+        time * perTransportTimeUnit * traffic.delayFactor
+      }
+    }
+
   }
 
   override fun getTransportTime(from: Location, to: Location, departureTime: Double, driver: Driver?, vehicle: Vehicle?): Double {
     val key = Pair(from.coordinate, to.coordinate)
-    return routingCosts[key]!!.time
+    return routingCosts[key]!!.time * traffic.delayFactor
   }
 
   override fun getDistance(from: Location, to: Location, departureTime: Double, vehicle: Vehicle?): Double {

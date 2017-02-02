@@ -25,7 +25,8 @@ import java.security.InvalidParameterException
 object VehicleRoutingProblem {
 
   class Options(
-    val weighting: Godwit.Weighting = Godwit.Weighting.FASTEST
+    val weighting: Godwit.Weighting = Godwit.Weighting.FASTEST,
+    val traffic: Godwit.Traffic = Godwit.Traffic.NONE
   )
 
   data class Solution internal constructor(
@@ -79,7 +80,7 @@ object VehicleRoutingProblem {
       .addAllJobs(jobs)
       .addAllVehicles(vehicles)
 
-    val routingCosts = GodwitRoutingCosts(vrpBuilder.locationMap.values, options.weighting)
+    val routingCosts = GodwitRoutingCosts(vrpBuilder.locationMap.values, options.weighting, options.traffic)
     val vrp = vrpBuilder
       .setRoutingCost(routingCosts)
       .setFleetSize(VehicleRoutingProblem.FleetSize.FINITE)

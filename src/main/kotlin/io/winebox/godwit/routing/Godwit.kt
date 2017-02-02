@@ -6,6 +6,7 @@ import com.graphhopper.reader.osm.GraphHopperOSM
 import com.graphhopper.routing.util.EncodingManager
 import com.graphhopper.util.shapes.GHPoint
 import io.winebox.godwit.routing.utils.LocationRepresentable
+import java.lang.Math.pow
 import java.security.InvalidParameterException
 import java.util.concurrent.locks.StampedLock
 
@@ -16,13 +17,13 @@ import java.util.concurrent.locks.StampedLock
 object Godwit {
 
   enum class Weighting {
-    SHORTEST, FASTEST;
+    FASTEST, SHORTEST;
 
     companion object {
       fun from(value: String): Weighting {
         return when (value) {
-          "shortest" -> SHORTEST
           "fastest" -> FASTEST
+          "shortest" -> SHORTEST
           else -> throw InvalidParameterException("Route weighting can not be inferred from \"$value\".")
         }
       }
@@ -30,8 +31,42 @@ object Godwit {
 
     val value: String get() {
       return when (this) {
-        SHORTEST -> "shortest"
         FASTEST -> "fastest"
+        SHORTEST -> "shortest"
+      }
+    }
+  }
+
+  enum class Traffic {
+    NONE, LIGHT, MODERATE, HEAVY;
+
+    companion object {
+      fun from(value: String): Traffic {
+        return when (value) {
+          "none" -> NONE
+          "light" -> LIGHT
+          "moderate" -> MODERATE
+          "heavy" -> HEAVY
+          else -> throw InvalidParameterException("Road traffic can not be inferred from \"$value\".")
+        }
+      }
+    }
+
+    val value: String get() {
+      return when (this) {
+        NONE -> "none"
+        LIGHT -> "light"
+        MODERATE -> "moderate"
+        HEAVY -> "heavy"
+      }
+    }
+
+    val delayFactor: Double get() {
+      return when (this) {
+        NONE -> pow(1.44, 2.0)
+        LIGHT -> pow(1.44, 1.0)
+        MODERATE -> pow(1.44, 2.0)
+        HEAVY -> pow(1.44, 3.0)
       }
     }
   }
