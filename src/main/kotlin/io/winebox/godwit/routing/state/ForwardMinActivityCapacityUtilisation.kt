@@ -13,7 +13,7 @@ import com.graphhopper.jsprit.core.problem.solution.route.activity.TourActivity
  * Created by aj on 2/1/17.
  */
 
-class MinCapacityUtilisationAtActivitiesByLookingForwardInRoute(
+class ForwardMinActivityCapacityUtilisation(
   private val stateManager: StateManager,
   private val futureMinLoadStateId: StateId
 ): StateUpdater, ReverseActivityVisitor {

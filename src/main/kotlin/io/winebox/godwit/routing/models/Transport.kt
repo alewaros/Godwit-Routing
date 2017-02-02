@@ -1,7 +1,10 @@
 package io.winebox.godwit.routing.models
 
+import com.graphhopper.jsprit.core.problem.Capacity
 import com.graphhopper.jsprit.core.problem.vehicle.Vehicle
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleImpl
+import com.graphhopper.jsprit.core.problem.vehicle.VehicleType
+import com.graphhopper.jsprit.core.problem.vehicle.VehicleTypeImpl
 import io.winebox.godwit.routing.fleet.TransportRepresentable
 
 /**
@@ -14,6 +17,7 @@ class Transport(
   override val endLocation: Location? = null,
   override val shift: TimeWindow = TimeWindow(),
   override val type: Collection<String> = listOf(),
+  override val capacity: Int = 0,
   override val maxDistance: Double? = null
 ): TransportRepresentable {
   internal fun transform(): Vehicle {
@@ -24,6 +28,10 @@ class Transport(
     vehicleBuilder.setEarliestStart(shift.start)
     vehicleBuilder.setLatestArrival(shift.end)
     type.forEach { vehicleBuilder.addSkill(it) }
+    vehicleBuilder.setType(VehicleTypeImpl.Builder.newInstance("transport")
+      .addCapacityDimension(0, capacity)
+      .build()
+    )
     return vehicleBuilder.build()
   }
 }

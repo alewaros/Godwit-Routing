@@ -12,10 +12,13 @@ import com.graphhopper.jsprit.core.problem.solution.route.activity.End
 import com.graphhopper.jsprit.core.problem.solution.route.activity.Start
 import com.graphhopper.jsprit.core.problem.solution.route.activity.TourActivity
 import com.graphhopper.jsprit.core.util.Solutions
+import io.winebox.godwit.routing.constraint.MinActivityCapacityUtilisationConstraint
 import io.winebox.godwit.routing.costs.GodwitRoutingCosts
 import io.winebox.godwit.routing.models.Task
 import io.winebox.godwit.routing.models.Transport
 import io.winebox.godwit.routing.models.Visit
+import io.winebox.godwit.routing.state.BackwardMinActivityCapacityUtilisation
+import io.winebox.godwit.routing.state.ForwardMinActivityCapacityUtilisation
 import java.security.InvalidParameterException
 
 /**
@@ -24,7 +27,7 @@ import java.security.InvalidParameterException
 
 object VehicleRoutingProblem {
 
-  class Options(
+  data class Options(
     val weighting: Godwit.Weighting = Godwit.Weighting.FASTEST,
     val traffic: Godwit.Traffic = Godwit.Traffic.NONE
   )
@@ -74,6 +77,7 @@ object VehicleRoutingProblem {
     val fleetByVehicle = fleet.associateBy(Transport::transform)
     val vehicles = fleetByVehicle.keys
 
+    val problemHandlesDropoffs = visits.any { visit -> visit.load < 0 }
     val problemHandlesVehicleMaxDistances = fleet.any { transport -> transport.maxDistance != null }
 
     val vrpBuilder = VehicleRoutingProblem.Builder.newInstance()
@@ -89,6 +93,18 @@ object VehicleRoutingProblem {
     val stateManager = StateManager(vrp)
     val stateUpdaters = mutableListOf<StateUpdater>()
     val constraints = mutableListOf<Constraint>()
+
+    if (problemHandlesDropoffs) {
+      val pastMinLoadStateId = stateManager.createStateId("past_min_load")
+      val futureMinLoadStateId = stateManager.createStateId("future_min_load")
+      val backwardMinActivityCapacityUtilisationUpdater = BackwardMinActivityCapacityUtilisation(stateManager, pastMinLoadStateId)
+      val forwardMinActivityCapacityUtilisationUpdater = ForwardMinActivityCapacityUtilisation(stateManager, futureMinLoadStateId)
+      stateUpdaters.add(backwardMinActivityCapacityUtilisationUpdater)
+      stateUpdaters.add(forwardMinActivityCapacityUtilisationUpdater)
+
+      val minActivityCapacityUtilisationConstraint = MinActivityCapacityUtilisationConstraint(stateManager, pastMinLoadStateId, futureMinLoadStateId)
+      constraints.add(minActivityCapacityUtilisationConstraint)
+    }
 
     if (problemHandlesVehicleMaxDistances) {
       val transportDistance = routingCosts

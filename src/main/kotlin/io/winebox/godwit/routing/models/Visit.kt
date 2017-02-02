@@ -11,7 +11,8 @@ import java.security.InvalidParameterException
 abstract class Visit(
   override val id: String,
   override val priority: Priority,
-  override val type: Collection<String>
+  override val type: Collection<String>,
+  override val load: Int
 ) : VisitRepresentable {
 
   enum class Priority : VisitRepresentable.Priority {

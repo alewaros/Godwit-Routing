@@ -11,5 +11,6 @@ interface TransportRepresentable : Identifiable {
   val endLocation: LocationRepresentable?
   val shift: TimeWindowRepresentable
   val type: Collection<String>
+  val capacity: Int
   val maxDistance: Double?
 }

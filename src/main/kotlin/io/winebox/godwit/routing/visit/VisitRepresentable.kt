@@ -10,6 +10,7 @@ import io.winebox.godwit.routing.utils.Identifiable
 interface VisitRepresentable: Identifiable {
   val priority: Priority
   val type: Collection<String>
+  val load: Int
 
   interface Priority
 }
