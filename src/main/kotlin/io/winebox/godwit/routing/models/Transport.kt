@@ -16,9 +16,10 @@ class Transport(
   override val startLocation: Location,
   override val endLocation: Location? = null,
   override val shift: TimeWindow = TimeWindow(),
-  override val type: Collection<String> = listOf(),
+  override val type: Collection<String> = setOf(),
   override val capacity: Int = 0,
-  override val maxDistance: Double? = null
+  override val maxDistance: Double? = null,
+  override val shouldDelayDeparture: Boolean = true
 ): TransportRepresentable {
   internal fun transform(): Vehicle {
     val vehicleBuilder = VehicleImpl.Builder.newInstance(id)

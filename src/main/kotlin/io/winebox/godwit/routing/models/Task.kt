@@ -13,7 +13,7 @@ class Task(
   override val id: String,
   override val stop: Stop,
   override val priority: Priority = Visit.Priority.MEDIUM,
-  override val type: Collection<String> = listOf(),
+  override val type: Collection<String> = setOf(),
   override val load: Int = 0
 ): Visit(id, priority, type, load), OneStopVisitRepresentable {
 

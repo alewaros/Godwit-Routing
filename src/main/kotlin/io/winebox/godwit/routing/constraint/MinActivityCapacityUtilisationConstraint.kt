@@ -18,9 +18,12 @@ class MinActivityCapacityUtilisationConstraint(
 ): HardActivityConstraint {
 
   override fun fulfilled(iFacts: JobInsertionContext, prevAct: TourActivity, newAct: TourActivity, nextAct: TourActivity, prevActDepTime: Double): HardActivityConstraint.ConstraintsStatus {
-    if (newAct !is PickupService && newAct !is DeliverService) {
+    if (newAct !is PickupService && newAct !is ServiceActivity && newAct !is DeliverService) {
       return HardActivityConstraint.ConstraintsStatus.FULFILLED
     }
+
+
+
     val newActivityLoad = (newAct as TourActivity).size
 
     val defaultCapacity = Capacity.Builder.newInstance().build()

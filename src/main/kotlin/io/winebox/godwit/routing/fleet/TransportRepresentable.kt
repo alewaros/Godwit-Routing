@@ -13,4 +13,5 @@ interface TransportRepresentable : Identifiable {
   val type: Collection<String>
   val capacity: Int
   val maxDistance: Double?
+  val shouldDelayDeparture: Boolean
 }
